@@ -32,6 +32,12 @@ export interface KBarOptions {
     enterMs?: number;
     exitMs?: number;
   };
+  callbacks?: {
+    onOpen?: () => void;
+    onClose?: () => void;
+    onQueryChange?: (searchQuery: string) => void;
+    onSelectAction?: (action: ActionImpl) => void;
+  };
 }
 
 export interface KBarProviderProps {

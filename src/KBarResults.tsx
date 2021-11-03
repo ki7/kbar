@@ -1,12 +1,12 @@
 import * as React from "react";
 import { useVirtual } from "react-virtual";
 import { useKBar } from ".";
-import { Action } from "./types";
+import { ActionImpl } from "./action";
 import { usePointerMovedSinceMount } from "./utils";
 
 const START_INDEX = 0;
 
-interface RenderParams<T = Action | string> {
+interface RenderParams<T = ActionImpl | string> {
   item: T;
   active: boolean;
 }
@@ -33,7 +33,7 @@ const KBarResults: React.FC<KBarResultsProps> = (props) => {
 
   const [activeIndex, setActiveIndex] = React.useState(START_INDEX);
 
-  const { query, search, currentRootActionId } = useKBar((state) => ({
+  const { query, search, currentRootActionId, options } = useKBar((state) => ({
     search: state.searchQuery,
     currentRootActionId: state.currentRootActionId,
   }));
@@ -106,12 +106,13 @@ const KBarResults: React.FC<KBarResultsProps> = (props) => {
       if (item.perform) {
         item.perform();
         query.toggle();
-        return;
+      } else {
+        query.setSearch("");
+        query.setCurrentRootAction(item.id);
       }
-      query.setSearch("");
-      query.setCurrentRootAction(item.id);
+      options.callbacks?.onSelectAction?.(item);
     },
-    [query]
+    [query, options]
   );
 
   const pointerMoved = usePointerMovedSinceMount();

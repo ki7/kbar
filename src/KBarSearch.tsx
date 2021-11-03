@@ -4,11 +4,13 @@ import useKBar from "./useKBar";
 export default function KBarSearch(
   props: React.InputHTMLAttributes<HTMLInputElement>
 ) {
-  const { query, search, actions, currentRootActionId } = useKBar((state) => ({
-    search: state.searchQuery,
-    currentRootActionId: state.currentRootActionId,
-    actions: state.actions,
-  }));
+  const { query, search, actions, currentRootActionId, options } = useKBar(
+    (state) => ({
+      search: state.searchQuery,
+      currentRootActionId: state.currentRootActionId,
+      actions: state.actions,
+    })
+  );
 
   const ownRef = React.useRef<HTMLInputElement>(null);
 
@@ -27,6 +29,7 @@ export default function KBarSearch(
       onChange={(event) => {
         props.onChange?.(event);
         query.setSearch(event.target.value);
+        options?.callbacks?.onQueryChange?.(event.target.value);
       }}
       spellCheck="false"
       autoComplete="off"

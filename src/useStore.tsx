@@ -84,22 +84,36 @@ export default function useStore(props: useStoreProps) {
             visualState: typeof cb === "function" ? cb(state.visualState) : cb,
           }));
         },
-        setSearch: (searchQuery: string) =>
+        setSearch: (searchQuery: string) => {
           setState((state) => ({
             ...state,
             searchQuery,
-          })),
+          }));
+        },
         registerActions,
         toggle: () =>
-          setState((state) => ({
-            ...state,
-            visualState: [
+          setState((state) => {
+            const nextState = [
               VisualState.animatingOut,
               VisualState.hidden,
             ].includes(state.visualState)
               ? VisualState.animatingIn
-              : VisualState.animatingOut,
-          })),
+              : VisualState.animatingOut;
+
+            switch (nextState) {
+              case VisualState.animatingIn:
+                optionsRef.current.callbacks?.onOpen?.();
+                break;
+              case VisualState.animatingOut:
+                optionsRef.current.callbacks?.onClose?.();
+                break;
+            }
+
+            return {
+              ...state,
+              visualState: nextState,
+            };
+          }),
       },
       options: optionsRef.current,
       subscribe: (
